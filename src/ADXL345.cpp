@@ -41,7 +41,6 @@ ADXL345::ADXL345(I2C * busI2C, uint8_t addr)
 }
 
 /* Public functions */
-
 bool ADXL345::init(){
     return init(WHO_AM_I_CODE);
 }
@@ -51,6 +50,7 @@ xyzAcc ADXL345::getAcceleration(){
 }
 
 void ADXL345::calibrate(){
+    printf("Calibration...\r\n");
     // Reset offsets : Register 0x1E, Register 0x1F, Register 0x20 — OFSX, OFSY, OFSZ (Read/Write) → 0x00
     writeRegister(REGISTER_OFSX, 0x00);
     writeRegister(REGISTER_OFSY, 0x00);
@@ -58,7 +58,7 @@ void ADXL345::calibrate(){
 
     // Collect N measurement
     // Calculate the average values for each axis
-    int N = 320;
+    int N = 420;
     int n = 0;
     xyzAcc accSum;
     accSum.x = 0;
@@ -82,11 +82,21 @@ void ADXL345::calibrate(){
     offset.y = accSum.y / n;
     offset.z = accSum.z / n;
 
-    setOffsets(offset);
+    uint8_t offX = -1 *  offset.x    * 1000 / 15.6;
+    uint8_t offY = -1 *  offset.y    * 1000 / 15.6;
+    uint8_t offZ = -1 * (offset.z-1) * 1000 / 15.6;
+
+    printf("Finished\r\n");
+    printf("Calibration parameters: [%d, %d, %d]\r\n", offX, offY, offZ);
+
+    setOffsets(offX, offY, offZ);
+}
+
+void ADXL345::setCalibrationParameters(uint8_t OFX, uint8_t OFY, uint8_t OFZ){
+    setOffsets(OFX, OFY, OFZ);
 }
 
 /* Protected functions */
-
 bool ADXL345::init(uint8_t expectedValue){
     // Standby mode: Register 0x2D—POWER_CTL → 0x00
     writeRegister(REGISTER_POWER_CTL, 0x00);
@@ -127,9 +137,6 @@ void ADXL345::writeRegister(uint8_t reg, uint8_t val){
     wait_us(5e3);
 }
 
-
-
-
 /* Private functions */
 void ADXL345::updateScale(){
     char actualDataFormat = readRegister8(REGISTER_DATA_FORMAT);
@@ -138,15 +145,11 @@ void ADXL345::updateScale(){
     _scale =  (int)(1 << ((1 - fullResolution) * range)) * 3.9 / 1000;
 }
 
-void ADXL345::setOffsets(xyzAcc offset){
-    uint8_t offX = -1 *  offset.x    * 1000 / 15.6;
-    uint8_t offY = -1 *  offset.y    * 1000 / 15.6;
-    uint8_t offZ = -1 * (offset.z-1) * 1000 / 15.6;
-
+void ADXL345::setOffsets(uint8_t OFX, uint8_t OFY, uint8_t OFZ){
     // Write result to offset registers
-    writeRegister(REGISTER_OFSX, offX);
-    writeRegister(REGISTER_OFSY, offY);
-    writeRegister(REGISTER_OFSZ, offZ);
+    writeRegister(REGISTER_OFSX, OFX);
+    writeRegister(REGISTER_OFSY, OFY);
+    writeRegister(REGISTER_OFSZ, OFZ);
     wait_us(100e3);
 }
 

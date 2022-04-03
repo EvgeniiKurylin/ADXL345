@@ -9,27 +9,6 @@
 #define ADXL345_WRITE_ADDR          _address & 0b11111110
 #define ADXL345_READ_ADDR           _address | 0b00000001
 
-#define AUTO_SLEEP_MODE             0b00010000
-#define STANDBY_MODE                0b00000000
-#define MEASUREMENT_MODE            0b00001000
-#define SLEEP_MODE                  0b00000100
-
-#define RIGHT_JUSTIFY               (_dataFormat | 0b00000100)
-#define LEFT_JUSTIFY                (_dataFormat & 0b11111011)
-
-#define FULL_RES_MODE               (_dataFormat | 0b00001000)
-#define BIT10_RES_MODE              (_dataFormat & 0b11110111)
-
-#define RANGE_2G                    (_dataFormat & 0b11111100)
-#define RANGE_4G                    ((_dataFormat & 0b11111100) | 0b01)
-#define RANGE_8G                    ((_dataFormat & 0b11111100) | 0b10)
-#define RANGE_16G                   ((_dataFormat & 0b11111100) | 0b11)
-
-#define FIFO_BYPASS                 (_fifoMode & 0b00111111)
-#define FIFO_FIFO                   ((_fifoMode & 0b00111111) | 0b01000000)
-#define FIFO_STREAM                 ((_fifoMode & 0b00111111) | 0b10000000)
-#define FIFO_TRIGGER                ((_fifoMode & 0b00111111) | 0b11000000)
-
 struct xyzAcc{
     float x;
     float y;
@@ -81,24 +60,7 @@ class ADXL345{
         xyzAcc getAcceleration();
 
         void calibrate();
-        
-        // void powerOn();
-        // bool ping();
-
-        // void setMode(uint8_t mode);
-        // void setBandWigth(uint8_t bw);
-
-        // void setResolution(uint8_t res);
-        // void setJusifyBit(uint8_t jBit);
-        // void setRange(uint8_t range);
-
-        // void readXYZ(float* accX, float* accY, float* accZ);
-
-        
-
-        // void updateMeasurement();
-
-        // void printAllRegister();
+        void setCalibrationParameters(uint8_t OFX, uint8_t OFY, uint8_t OFZ);
     
     protected:
         bool init(uint8_t expectedValue);
@@ -116,12 +78,11 @@ class ADXL345{
         xyzAcc _offset;
 
         xyzAcc readAcceleration();
-        void setOffsets(xyzAcc offset);
+        void setOffsets(uint8_t OFX, uint8_t OFY, uint8_t OFZ);
 
         float _scale;
         void updateScale();
 };
 
 void printByte(char byte);
-
 #endif
