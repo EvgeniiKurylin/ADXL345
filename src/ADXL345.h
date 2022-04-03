@@ -9,10 +9,24 @@
 #define ADXL345_WRITE_ADDR          _address & 0b11111110
 #define ADXL345_READ_ADDR           _address | 0b00000001
 
-struct xyzAcc{
+struct xyzFloat{
     float x;
     float y;
     float z;
+
+    xyzFloat();
+    xyzFloat(float const x, float const y, float const z);
+
+    xyzFloat operator+() const;
+    xyzFloat operator-() const;
+    xyzFloat operator+(xyzFloat const & summand) const;
+    xyzFloat operator-(xyzFloat const & substrahend) const;
+    xyzFloat operator*(float const operand) const;
+    xyzFloat operator/(float const divisor) const;
+    xyzFloat & operator+=(xyzFloat const & summand);
+    xyzFloat & operator-=(xyzFloat const & substrahend);
+    xyzFloat & operator*=(float const operand);
+    xyzFloat & operator/=(float const divisor);
 };
 
 
@@ -57,7 +71,7 @@ class ADXL345{
 
         bool init();
 
-        xyzAcc getAcceleration();
+        xyzFloat getAcceleration();
 
         void calibrate();
         void setCalibrationParameters(uint8_t OFX, uint8_t OFY, uint8_t OFZ);
@@ -74,10 +88,10 @@ class ADXL345{
         uint8_t _address;
         uint8_t _ID;
 
-        xyzAcc _acceleration;
-        xyzAcc _offset;
+        xyzFloat _acceleration;
+        xyzFloat _offset;
 
-        xyzAcc readAcceleration();
+        xyzFloat readAcceleration();
         void setOffsets(uint8_t OFX, uint8_t OFY, uint8_t OFZ);
 
         float _scale;

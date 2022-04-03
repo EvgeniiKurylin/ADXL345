@@ -2,6 +2,90 @@
 #include <cstdint>
 #include <cstdio>
 
+xyzFloat::xyzFloat()
+    : xyzFloat(0.f, 0.f, 0.f)
+{
+}
+
+xyzFloat::xyzFloat(float const x, float const y, float const z)
+    : x(x)
+    , y(y)
+    , z(z)
+{
+}
+
+xyzFloat xyzFloat::operator+() const
+{
+    return *this;
+}
+
+xyzFloat xyzFloat::operator-() const
+{
+    return xyzFloat{-x, -y, -z};
+}
+
+xyzFloat xyzFloat::operator+(const xyzFloat &summand) const
+{
+    return xyzFloat{x + summand.x,
+                    y + summand.y,
+                    z + summand.z};
+}
+
+xyzFloat xyzFloat::operator-(const xyzFloat &subtrahend) const
+{
+    return xyzFloat{x - subtrahend.x,
+                    y - subtrahend.y,
+                    z - subtrahend.z};
+}
+
+xyzFloat xyzFloat::operator*(const float operand) const
+{
+    return xyzFloat{x*operand, y*operand, z*operand};
+}
+
+xyzFloat xyzFloat::operator/(const float divisor) const
+{
+    return xyzFloat{x/divisor, y/divisor, z/divisor};
+}
+
+xyzFloat & xyzFloat::operator+=(xyzFloat const & summand)
+{
+    x += summand.x;
+    y += summand.y;
+    z += summand.z;
+    return *this;
+}
+
+xyzFloat & xyzFloat::operator-=(xyzFloat const & subtrahend)
+{
+    x -= subtrahend.x;
+    y -= subtrahend.y;
+    z -= subtrahend.z;
+    return *this;
+}
+
+xyzFloat & xyzFloat::operator*=(float const operand)
+{
+    x *= operand;
+    y *= operand;
+    z *= operand;
+    return *this;
+}
+
+xyzFloat & xyzFloat::operator/=(float const divisor)
+{
+    x /= divisor;
+    y /= divisor;
+    z /= divisor;
+    return *this;
+}
+
+
+
+
+
+
+
 uint8_t constexpr ADXL345::REGISTER_DEVID             ;     // R            Device ID
 uint8_t constexpr ADXL345::REGISTER_THRESH_TAP        ;     // R/W          Tap threshold
 uint8_t constexpr ADXL345::REGISTER_OFSX              ;     // R/W          X-axis offset
@@ -45,7 +129,7 @@ bool ADXL345::init(){
     return init(WHO_AM_I_CODE);
 }
 
-xyzAcc ADXL345::getAcceleration(){
+xyzFloat ADXL345::getAcceleration(){
     return readAcceleration();
 }
 
@@ -60,27 +144,20 @@ void ADXL345::calibrate(){
     // Calculate the average values for each axis
     int N = 420;
     int n = 0;
-    xyzAcc accSum;
-    accSum.x = 0;
-    accSum.y = 0;
-    accSum.z = 0;
+    xyzFloat accSum(0,0,0);
 
-    xyzAcc mes;
+    xyzFloat mes;
     for (int i=0; i<N; ++i) {
         mes = readAcceleration();
         if (i >= 20) {
-            accSum.x += mes.x;
-            accSum.y += mes.y;
-            accSum.z += mes.z;
+            accSum += mes;
             ++n;
         }
         wait_us(10e3);
     }
 
-    xyzAcc offset;
-    offset.x = accSum.x / n;
-    offset.y = accSum.y / n;
-    offset.z = accSum.z / n;
+    xyzFloat offset;
+    offset = accSum/n;
 
     uint8_t offX = -1 *  offset.x    * 1000 / 15.6;
     uint8_t offY = -1 *  offset.y    * 1000 / 15.6;
@@ -153,8 +230,8 @@ void ADXL345::setOffsets(uint8_t OFX, uint8_t OFY, uint8_t OFZ){
     wait_us(100e3);
 }
 
-xyzAcc ADXL345::readAcceleration(){
-    xyzAcc measurement;
+xyzFloat ADXL345::readAcceleration(){
+    xyzFloat measurement;
     char request[1] = {REGISTER_DATAX0};
     _i2c->write(ADXL345_WRITE_ADDR, request, 1, false);
 
