@@ -2,90 +2,7 @@
 #include <cstdint>
 #include <cstdio>
 
-xyzFloat::xyzFloat()
-    : xyzFloat(0.f, 0.f, 0.f)
-{
-}
-
-xyzFloat::xyzFloat(float const x, float const y, float const z)
-    : x(x)
-    , y(y)
-    , z(z)
-{
-}
-
-xyzFloat xyzFloat::operator+() const
-{
-    return *this;
-}
-
-xyzFloat xyzFloat::operator-() const
-{
-    return xyzFloat{-x, -y, -z};
-}
-
-xyzFloat xyzFloat::operator+(const xyzFloat &summand) const
-{
-    return xyzFloat{x + summand.x,
-                    y + summand.y,
-                    z + summand.z};
-}
-
-xyzFloat xyzFloat::operator-(const xyzFloat &subtrahend) const
-{
-    return xyzFloat{x - subtrahend.x,
-                    y - subtrahend.y,
-                    z - subtrahend.z};
-}
-
-xyzFloat xyzFloat::operator*(const float operand) const
-{
-    return xyzFloat{x*operand, y*operand, z*operand};
-}
-
-xyzFloat xyzFloat::operator/(const float divisor) const
-{
-    return xyzFloat{x/divisor, y/divisor, z/divisor};
-}
-
-xyzFloat & xyzFloat::operator+=(xyzFloat const & summand)
-{
-    x += summand.x;
-    y += summand.y;
-    z += summand.z;
-    return *this;
-}
-
-xyzFloat & xyzFloat::operator-=(xyzFloat const & subtrahend)
-{
-    x -= subtrahend.x;
-    y -= subtrahend.y;
-    z -= subtrahend.z;
-    return *this;
-}
-
-xyzFloat & xyzFloat::operator*=(float const operand)
-{
-    x *= operand;
-    y *= operand;
-    z *= operand;
-    return *this;
-}
-
-xyzFloat & xyzFloat::operator/=(float const divisor)
-{
-    x /= divisor;
-    y /= divisor;
-    z /= divisor;
-    return *this;
-}
-
-
-
-
-
-
-
+/* ADXL345 Registers */
 uint8_t constexpr ADXL345::REGISTER_DEVID             ;     // R            Device ID
 uint8_t constexpr ADXL345::REGISTER_THRESH_TAP        ;     // R/W          Tap threshold
 uint8_t constexpr ADXL345::REGISTER_OFSX              ;     // R/W          X-axis offset
@@ -117,11 +34,16 @@ uint8_t constexpr ADXL345::REGISTER_DATAZ1            ;     // R            Z-Ax
 uint8_t constexpr ADXL345::REGISTER_FIFO_CTL          ;     // R/W          FIFO control
 uint8_t constexpr ADXL345::REGISTER_FIFO_STATUS       ;     // R            FIFO status
 
+/* Constructors */
 ADXL345::ADXL345(I2C * busI2C, uint8_t addr)
  : _i2c(busI2C),
    _address(addr)
 {
 
+}
+
+ADXL345::~ADXL345(){
+    delete this;
 }
 
 /* Public functions */
@@ -211,7 +133,7 @@ uint8_t ADXL345::readRegister8(uint8_t reg){
 void ADXL345::writeRegister(uint8_t reg, uint8_t val){
     char msg[2] = {reg, val};
     _i2c->write(ADXL345_WRITE_ADDR, msg, 2, false);
-    wait_us(5e3);
+    wait_us(5e2);
 }
 
 /* Private functions */

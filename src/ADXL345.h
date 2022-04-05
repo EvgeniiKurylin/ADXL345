@@ -2,33 +2,12 @@
 #define ADXL345_H
 
 #include "mbed.h"
-// #include "ADXL345_REG_MAP.h"
+#include "utilities.h"
 #include <cstdint>
 
 #define ADXL345_DEFAULT_ADDR        0xA6
 #define ADXL345_WRITE_ADDR          _address & 0b11111110
 #define ADXL345_READ_ADDR           _address | 0b00000001
-
-struct xyzFloat{
-    float x;
-    float y;
-    float z;
-
-    xyzFloat();
-    xyzFloat(float const x, float const y, float const z);
-
-    xyzFloat operator+() const;
-    xyzFloat operator-() const;
-    xyzFloat operator+(xyzFloat const & summand) const;
-    xyzFloat operator-(xyzFloat const & substrahend) const;
-    xyzFloat operator*(float const operand) const;
-    xyzFloat operator/(float const divisor) const;
-    xyzFloat & operator+=(xyzFloat const & summand);
-    xyzFloat & operator-=(xyzFloat const & substrahend);
-    xyzFloat & operator*=(float const operand);
-    xyzFloat & operator/=(float const divisor);
-};
-
 
 class ADXL345{
     public:
@@ -68,6 +47,7 @@ class ADXL345{
         static uint8_t constexpr WHO_AM_I_CODE              = 0xE5;
 
         ADXL345(I2C * busI2C, uint8_t addr = ADXL345_DEFAULT_ADDR);
+        ~ADXL345();
 
         bool init();
 
