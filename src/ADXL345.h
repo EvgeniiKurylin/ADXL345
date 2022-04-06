@@ -78,5 +78,4 @@ class ADXL345{
         void updateScale();
 };
 
-void printByte(char byte);
 #endif

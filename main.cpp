@@ -24,6 +24,7 @@ int main()
         printf("\nADXL345 isn't found\r\n");
     }
 
+    // Measurement in [g] -> 9.81 [m/s^2]
     xyzFloat acc;
 
     while (true) {

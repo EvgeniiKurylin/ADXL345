@@ -153,6 +153,7 @@ void ADXL345::setOffsets(uint8_t OFX, uint8_t OFY, uint8_t OFZ){
 }
 
 xyzFloat ADXL345::readAcceleration(){
+    // Measurement in [g] -> 9.81 [m/s^2]
     xyzFloat measurement;
     char request[1] = {REGISTER_DATAX0};
     _i2c->write(ADXL345_WRITE_ADDR, request, 1, false);
@@ -165,10 +166,4 @@ xyzFloat ADXL345::readAcceleration(){
     measurement.z = (int16_t)((recievedData[5] << 8) | recievedData[4]) * _scale;
 
     return measurement;
-}
-
-void printByte(char byte) {
-  printf("0b");
-  for (int i = 7; i >= 0; --i)
-    printf("%d", (byte >> i) & 1);
 }
