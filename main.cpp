@@ -17,6 +17,8 @@ int main()
 {
     if (adxl345_dev.init()) {
         printf("\nADXL345 is detected\r\n");
+        // adxl345_dev.calibrate();     // last calibration result : [0, 1, -11]
+        adxl345_dev.setCalibrationParameters(0, 1, -11);
     }
     else {
         printf("\nADXL345 isn't found\r\n");

@@ -39,7 +39,7 @@ ADXL345::ADXL345(I2C * busI2C, uint8_t addr)
  : _i2c(busI2C),
    _address(addr)
 {
-
+ 
 }
 
 ADXL345::~ADXL345(){
