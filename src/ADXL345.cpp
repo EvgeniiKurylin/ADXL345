@@ -56,7 +56,7 @@ xyzFloat ADXL345::getAcceleration(){
 }
 
 void ADXL345::calibrate(){
-    printf("Calibration...\r\n");
+    // printf("Calibration...\r\n");
     // Reset offsets : Register 0x1E, Register 0x1F, Register 0x20 — OFSX, OFSY, OFSZ (Read/Write) → 0x00
     writeRegister(REGISTER_OFSX, 0x00);
     writeRegister(REGISTER_OFSY, 0x00);
@@ -85,8 +85,8 @@ void ADXL345::calibrate(){
     uint8_t offY = -1 *  offset.y    * 1000 / 15.6;
     uint8_t offZ = -1 * (offset.z-1) * 1000 / 15.6;
 
-    printf("Finished\r\n");
-    printf("Calibration parameters: [%d, %d, %d]\r\n", offX, offY, offZ);
+    // printf("Finished\r\n");
+    // printf("Calibration parameters: [%d, %d, %d]\r\n", offX, offY, offZ);
 
     setOffsets(offX, offY, offZ);
 }
